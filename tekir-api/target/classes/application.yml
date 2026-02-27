@@ -1,0 +1,114 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: tekir-api
+
+  # Database - connects to the same legacy Tekir database
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tekir2
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: none  # Validation failed due to naming mismatches, schema is manually verified
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        tenant_identifier_resolver: com.ut.tekir.tenant.resolver.CurrentTenantIdentifierResolverImpl
+
+  # Flyway - enabled by default to ensure migrations are applied
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+# Tekir Configuration
+tekir:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:dGVraXItbW9kZXJuLWp3dC1zZWNyZXQta2V5LWZvci1kZXZlbG9wbWVudC1vbmx5LWNoYW5nZS1pbi1wcm9kdWN0aW9u}
+      expiration: 86400000      # 24 hours
+      refresh-expiration: 604800000  # 7 days
+
+  tenant:
+    default-tenant-id: 1
+    resolution-order: jwt,header,subdomain
+    base-domain: tekir.com.tr
+
+  billing:
+    payment-gateway: ${PAYMENT_GATEWAY:stripe}
+    trial-days: 14
+    stripe:
+      api-key: ${STRIPE_API_KEY:}
+      webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+
+  rate-limit:
+    enabled: true
+    default-requests-per-minute: 60
+
+# Swagger / OpenAPI
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.ut.tekir: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+---
+# Production profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jpa:
+    show-sql: false
+
+  flyway:
+    enabled: true
+
+logging:
+  level:
+    root: WARN
+    com.ut.tekir: INFO
+    org.hibernate.SQL: WARN

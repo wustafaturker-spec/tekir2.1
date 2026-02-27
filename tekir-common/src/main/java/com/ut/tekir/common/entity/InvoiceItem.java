@@ -1,0 +1,75 @@
+package com.ut.tekir.common.entity;
+
+import com.ut.tekir.common.entity.AuditBase;
+import com.ut.tekir.common.embeddable.Quantity;
+import com.ut.tekir.common.embeddable.MoneySet;
+import com.ut.tekir.common.embeddable.TaxEmbeddable;
+import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Table(name = "INVOICE_ITEM")
+@Getter
+@Setter
+public class InvoiceItem extends AuditBase {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "genericSeq")
+    @Column(name = "ID")
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "OWNER_ID")
+    private Invoice owner;
+
+    @ManyToOne
+    @JoinColumn(name = "PRODUCT_ID")
+    private Product product;
+    
+    @Embedded
+    private Quantity quantity = new Quantity();
+    
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "value", column = @Column(name = "UNIT_PRICE_VAL")),
+        @AttributeOverride(name = "currency", column = @Column(name = "UNIT_PRICE_CCY")),
+        @AttributeOverride(name = "localAmount", column = @Column(name = "UNIT_PRICE_LCYVAL"))
+    })
+    private MoneySet unitPrice = new MoneySet();
+    
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "value", column = @Column(name = "TOTAL_AMOUNT_VAL")),
+        @AttributeOverride(name = "currency", column = @Column(name = "TOTAL_AMOUNT_CCY")),
+        @AttributeOverride(name = "localAmount", column = @Column(name = "TOTAL_AMOUNT_LCYVAL"))
+    })
+    private MoneySet amount = new MoneySet();
+    
+    @Embedded
+    private TaxEmbeddable tax = new TaxEmbeddable();
+    
+    // --- Snapshot Fields for Reports ---
+    @Embedded
+    @Valid
+    @AttributeOverrides({
+        @AttributeOverride(name = "value", column = @Column(name = "TAX_AMOUNT_VAL")),
+        @AttributeOverride(name = "currency", column = @Column(name = "TAX_AMOUNT_CCY")),
+        @AttributeOverride(name = "localAmount", column = @Column(name = "TAX_AMOUNT_LCYVAL"))
+    })
+    private MoneySet taxAmount = new MoneySet();
+
+    @Embedded
+    @Valid
+    @AttributeOverrides({
+        @AttributeOverride(name = "value", column = @Column(name = "BEFORE_TAX_AMOUNT_VAL")),
+        @AttributeOverride(name = "currency", column = @Column(name = "BEFORE_TAX_AMOUNT_CCY")),
+        @AttributeOverride(name = "localAmount", column = @Column(name = "BEFORE_TAX_AMOUNT_LCYVAL"))
+    })
+    private MoneySet beforeTaxAmount = new MoneySet();
+    
+    @Column(name = "INFO")
+    private String info;
+
+}

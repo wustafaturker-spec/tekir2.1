@@ -1,0 +1,4 @@
+com\ut\tekir\report\JasperReportEngine.class
+com\ut\tekir\report\ReportService.class
+com\ut\tekir\report\ReportController.class
+com\ut\tekir\report\ReportGenerationException.class

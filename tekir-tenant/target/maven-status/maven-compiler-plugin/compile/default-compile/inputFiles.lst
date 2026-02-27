@@ -1,0 +1,16 @@
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\dto\TenantRegistrationRequest.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\repository\TenantRepository.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\context\TenantContext.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\dto\TenantListDTO.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\dto\TenantRegistrationResponse.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\exception\TenantAccessDeniedException.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\interceptor\TenantInterceptor.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\exception\TenantNotFoundException.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\service\TenantSeedDataService.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\service\TenantOnboardingService.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\entity\TenantStatus.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\dto\TenantDetailDTO.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\service\TenantService.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\entity\Tenant.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\config\TenantWebConfig.java
+C:\Users\wusta\Desktop\tekir2-master\tekir2-master\tekir-modern\tekir-tenant\src\main\java\com\ut\tekir\tenant\resolver\CurrentTenantIdentifierResolverImpl.java

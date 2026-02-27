@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="bankTransferReport" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<style name="Defaulf" isDefault="true" isBlankWhenNull="true" fontName="Lucida Sans" fontSize="9" pdfEncoding="Cp1254"/>
+	<parameter name="pId" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TENANT_ID" class="java.lang.String"/>
+    <parameter name="pProductLabel" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[select bbt.code, bbt.txn_date, bbt.info, bbt.FROMCCY as currency, bbt.FROMAMT as amount,
+       ba_from.name as from_bank_account_name,
+       b_from.name as from_bank_name,
+       ba_to.name as to_bank_account_name,
+       b_to.name as to_bank_name
+from BANK_TO_BANK_TRANSFER bbt
+left join BANK_ACCOUNT ba_from on ba_from.id = bbt.FROM_BANK_ACCOUNT_ID
+left join BANK b_from on b_from.id = bbt.FROM_BANK_ID
+left join BANK_ACCOUNT ba_to on ba_to.id = bbt.TO_BANK_ACCOUNT_ID
+left join BANK b_to on b_to.id = bbt.TO_BANK_ID
+where bbt.id = $P{pId} and bbt.TENANT_ID = $P{TENANT_ID}]]>
+	</queryString>
+	<field name="code" class="java.lang.String"/>
+	<field name="txn_date" class="java.sql.Date"/>
+	<field name="info" class="java.lang.String"/>
+	<field name="currency" class="java.lang.String"/>
+	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="from_bank_account_name" class="java.lang.String"/>
+	<field name="from_bank_name" class="java.lang.String"/>
+	<field name="to_bank_account_name" class="java.lang.String"/>
+	<field name="to_bank_name" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="150" splitType="Stretch">
+			<staticText>
+				<reportElement key="staticText" x="0" y="0" width="535" height="24"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Lucida Sans" size="14" isBold="true" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1254"/>
+				</textElement>
+				<text><![CDATA[BANKA HAVALE FİŞİ]]></text>
+			</staticText>
+            
+            <staticText>
+                <reportElement x="0" y="40" width="80" height="15"/>
+                <textElement isBold="true"/>
+                <text><![CDATA[Fiş No:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="80" y="40" width="150" height="15"/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{code}]]></textFieldExpression>
+            </textField>
+            
+            <staticText>
+                <reportElement x="300" y="40" width="80" height="15"/>
+                <textElement isBold="true"/>
+                <text><![CDATA[Tarih:]]></text>
+            </staticText>
+            <textField pattern="dd/MM/yyyy">
+                <reportElement x="380" y="40" width="100" height="15"/>
+                <textFieldExpression class="java.util.Date"><![CDATA[$F{txn_date}]]></textFieldExpression>
+            </textField>
+            
+             <staticText>
+                <reportElement x="0" y="70" width="80" height="15"/>
+                <textElement isBold="true"/>
+                <text><![CDATA[Göderen:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="80" y="70" width="200" height="30"/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{from_bank_name} + " - " + $F{from_bank_account_name}]]></textFieldExpression>
+            </textField>
+            
+            <staticText>
+                <reportElement x="300" y="70" width="80" height="15"/>
+                <textElement isBold="true"/>
+                <text><![CDATA[Alıcı:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="380" y="70" width="155" height="30"/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{to_bank_name} + " - " + $F{to_bank_account_name}]]></textFieldExpression>
+            </textField>
+            
+            <staticText>
+                <reportElement x="0" y="110" width="80" height="15"/>
+                <textElement isBold="true"/>
+                <text><![CDATA[Tutar:]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="80" y="110" width="100" height="15"/>
+                <textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{amount}]]></textFieldExpression>
+            </textField>
+             <textField>
+                <reportElement x="180" y="110" width="50" height="15"/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{currency}]]></textFieldExpression>
+            </textField>
+            
+             <staticText>
+                <reportElement x="0" y="130" width="80" height="15"/>
+                <textElement isBold="true"/>
+                <text><![CDATA[Açıklama:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="80" y="130" width="455" height="15"/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{info}]]></textFieldExpression>
+            </textField>
+		</band>
+	</title>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="435" y="0" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Sayfa "+$V{PAGE_NUMBER}+" /"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="0" width="40" height="20"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+             <textField pattern="" isBlankWhenNull="true">
+				<reportElement key="textField-9" mode="Transparent" x="0" y="0" width="239" height="13" forecolor="#666666"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="Lucida Sans" size="7" isBold="true" isItalic="false" pdfEncoding="Cp1254"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{pProductLabel}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

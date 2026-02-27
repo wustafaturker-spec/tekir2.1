@@ -1,0 +1,17 @@
+com\ut\tekir\tenant\entity\Tenant$TenantBuilder.class
+com\ut\tekir\tenant\service\TenantService.class
+com\ut\tekir\tenant\interceptor\TenantInterceptor.class
+com\ut\tekir\tenant\dto\TenantDetailDTO.class
+com\ut\tekir\tenant\service\TenantSeedDataService.class
+com\ut\tekir\tenant\service\TenantOnboardingService.class
+com\ut\tekir\tenant\dto\TenantRegistrationResponse.class
+com\ut\tekir\tenant\resolver\CurrentTenantIdentifierResolverImpl.class
+com\ut\tekir\tenant\config\TenantWebConfig.class
+com\ut\tekir\tenant\context\TenantContext.class
+com\ut\tekir\tenant\dto\TenantListDTO.class
+com\ut\tekir\tenant\exception\TenantNotFoundException.class
+com\ut\tekir\tenant\dto\TenantRegistrationRequest.class
+com\ut\tekir\tenant\entity\TenantStatus.class
+com\ut\tekir\tenant\repository\TenantRepository.class
+com\ut\tekir\tenant\entity\Tenant.class
+com\ut\tekir\tenant\exception\TenantAccessDeniedException.class
