@@ -67,7 +67,7 @@ export default function AccountingPage() {
   const fetchPlans = useCallback(async () => {
     setLoading(true)
     try {
-      const resp = await api.get<AccountPlanDTO[]>('/api/v1/accounting/plans')
+      const resp = await api.get<AccountPlanDTO[]>('/accounting/plans')
       setPlans(resp.data)
     } catch {
       message.error('Hesap planları yüklenemedi')
@@ -91,7 +91,7 @@ export default function AccountingPage() {
       onOk: async () => {
         setTdhpLoading(true)
         try {
-          await api.post('/api/v1/accounting/plans/load-tdhp')
+          await api.post('/accounting/plans/load-tdhp')
           message.success('TDHP başarıyla yüklendi')
           fetchPlans()
         } catch (e: unknown) {
@@ -107,7 +107,7 @@ export default function AccountingPage() {
   const handleCreate = async (values: Record<string, unknown>) => {
     setSaving(true)
     try {
-      await api.post('/api/v1/accounting/plans', {
+      await api.post('/accounting/plans', {
         ...values,
         effectiveDate: values.effectiveDate
           ? (values.effectiveDate as { format: (s: string) => string }).format('YYYY-MM-DD')
@@ -127,7 +127,7 @@ export default function AccountingPage() {
 
   const handleActivate = async (planId: number) => {
     try {
-      await api.post(`/api/v1/accounting/plans/${planId}/activate`)
+      await api.post(`/accounting/plans/${planId}/activate`)
       message.success('Varsayılan plan güncellendi')
       fetchPlans()
     } catch {
@@ -146,7 +146,7 @@ export default function AccountingPage() {
       okButtonProps: { danger: true, disabled: plan.accountCount > 0 },
       onOk: async () => {
         try {
-          await api.delete(`/api/v1/accounting/plans/${plan.id}`)
+          await api.delete(`/accounting/plans/${plan.id}`)
           message.success('Plan silindi')
           fetchPlans()
         } catch (e: unknown) {

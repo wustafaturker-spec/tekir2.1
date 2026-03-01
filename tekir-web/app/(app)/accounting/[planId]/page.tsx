@@ -70,7 +70,7 @@ export default function PlanDetailPage() {
 
   const fetchPlan = useCallback(async () => {
     try {
-      const resp = await api.get<AccountPlanDTO>(`/api/v1/accounting/plans/${planId}`)
+      const resp = await api.get<AccountPlanDTO>(`/accounting/plans/${planId}`)
       setPlan(resp.data)
     } catch {
       message.error('Plan bilgisi yüklenemedi')
@@ -80,7 +80,7 @@ export default function PlanDetailPage() {
   const fetchTree = useCallback(async () => {
     setLoading(true)
     try {
-      const resp = await api.get<AccountNode[]>(`/api/v1/accounting/plans/${planId}/accounts`)
+      const resp = await api.get<AccountNode[]>(`/accounting/plans/${planId}/accounts`)
       setTreeData(resp.data)
     } catch {
       message.error('Hesap ağacı yüklenemedi')
@@ -92,7 +92,7 @@ export default function PlanDetailPage() {
   const fetchFlat = useCallback(async () => {
     try {
       const resp = await api.get<ChartAccountDTO[]>(
-        `/api/v1/accounting/plans/${planId}/accounts?flat=true`
+        `/accounting/plans/${planId}/accounts?flat=true`
       )
       setFlatData(resp.data)
     } catch {
@@ -138,10 +138,10 @@ export default function PlanDetailPage() {
     setSaving(true)
     try {
       if (editingAccount) {
-        await api.put(`/api/v1/accounting/plans/${planId}/accounts/${editingAccount.id}`, values)
+        await api.put(`/accounting/plans/${planId}/accounts/${editingAccount.id}`, values)
         message.success('Hesap güncellendi')
       } else {
-        await api.post(`/api/v1/accounting/plans/${planId}/accounts`, {
+        await api.post(`/accounting/plans/${planId}/accounts`, {
           ...values,
           parentId: selectedNode?.id ?? values.parentId ?? undefined,
         })
@@ -160,7 +160,7 @@ export default function PlanDetailPage() {
 
   const handleDelete = async (id: number) => {
     try {
-      await api.delete(`/api/v1/accounting/plans/${planId}/accounts/${id}`)
+      await api.delete(`/accounting/plans/${planId}/accounts/${id}`)
       message.success('Hesap silindi')
       refreshAll()
     } catch (e: unknown) {

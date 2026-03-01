@@ -36,7 +36,7 @@ export default function ImportModal({ open, planId, onCancel, onSuccess }: Impor
 
   const handleDownloadTemplate = async () => {
     try {
-      const resp = await api.get('/api/v1/accounting/plans/import/template', {
+      const resp = await api.get('/accounting/plans/import/template', {
         responseType: 'blob',
       })
       const url = window.URL.createObjectURL(new Blob([resp.data]))
@@ -59,7 +59,7 @@ export default function ImportModal({ open, planId, onCancel, onSuccess }: Impor
     setUploading(true)
     try {
       const resp = await api.post<ImportResult>(
-        `/api/v1/accounting/plans/${planId}/import`,
+        `/accounting/plans/${planId}/import`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       )

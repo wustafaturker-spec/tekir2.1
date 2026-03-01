@@ -137,7 +137,7 @@ public class AuthService {
                         .setParameter("tenantId", tenantId);
             } else {
                 nq = entityManager.createNativeQuery(
-                        "SELECT USER_NAME FROM USERS WHERE LOWER(EMAIL) = LOWER(:email) LIMIT 1")
+                        "SELECT USER_NAME FROM USERS WHERE LOWER(EMAIL) = LOWER(:email) ORDER BY CAST(TENANT_ID AS BIGINT) ASC LIMIT 1")
                         .setParameter("email", email);
             }
             @SuppressWarnings("unchecked")
