@@ -29,7 +29,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        tenant_identifier_resolver: com.ut.tekir.tenant.resolver.CurrentTenantIdentifierResolverImpl
 
   # Flyway - enabled by default to ensure migrations are applied
   flyway:

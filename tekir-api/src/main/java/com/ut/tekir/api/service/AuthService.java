@@ -39,10 +39,38 @@ public class AuthService {
 
     private final BCryptPasswordEncoder bCryptEncoder = new BCryptPasswordEncoder();
 
+    @Transactional(readOnly = true)
+    public List<TenantInfoDTO> getTenantsForEmail(String email) {
+        String sql = """
+            SELECT t.ID, t.NAME, t.SLUG, t.LOGO_URL
+            FROM USERS u
+            JOIN TENANT t ON CAST(u.TENANT_ID AS BIGINT) = t.ID
+            WHERE LOWER(u.EMAIL) = LOWER(:email)
+              AND u.ISACTIVE = true
+              AND t.ACTIVE = true
+            ORDER BY t.NAME
+            """;
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = entityManager.createNativeQuery(sql)
+            .setParameter("email", email)
+            .getResultList();
+        return rows.stream().map(r -> new TenantInfoDTO(
+            ((Number) r[0]).longValue(),
+            (String) r[1],
+            (String) r[2],
+            (String) r[3]
+        )).toList();
+    }
+
     @Transactional
-    public AuthResponse login(String loginInput, String password) {
-        // 1. Resolve Tenant from Email (if input is email)
-        Long tenantId = resolveTenantId(loginInput);
+    public AuthResponse login(String loginInput, String password, Long providedTenantId) {
+        // 1. Resolve Tenant — use provided tenantId if supplied, otherwise auto-detect
+        Long tenantId;
+        if (providedTenantId != null) {
+            tenantId = providedTenantId;
+        } else {
+            tenantId = resolveTenantId(loginInput);
+        }
 
         if (tenantId != null) {
             com.ut.tekir.tenant.context.TenantContext.setTenantId(tenantId);
@@ -72,12 +100,9 @@ public class AuthService {
 
     private Long resolveTenantId(String loginInput) {
         try {
-            // Native query to bypass potential tenant filters and find user globally
-            // We assume email is unique globally or we pick the first one
             List<Object> results = entityManager.createNativeQuery(
-                    "SELECT TENANT_ID FROM USERS WHERE EMAIL = :email OR USER_NAME = :username LIMIT 1")
+                    "SELECT TENANT_ID FROM USERS WHERE LOWER(EMAIL) = LOWER(:email) LIMIT 1")
                     .setParameter("email", loginInput)
-                    .setParameter("username", loginInput)
                     .getResultList();
 
             if (!results.isEmpty() && results.get(0) != null) {
@@ -99,21 +124,31 @@ public class AuthService {
         return null;
     }
 
-    private String resolveUsername(String loginInput) {
+    private String resolveUsername(String email) {
+        Long tenantId = com.ut.tekir.tenant.context.TenantContext.getTenantId();
         try {
-            List<Object> results = entityManager.createNativeQuery(
-                    "SELECT USER_NAME FROM USERS WHERE EMAIL = :email OR USER_NAME = :username LIMIT 1")
-                    .setParameter("email", loginInput)
-                    .setParameter("username", loginInput)
-                    .getResultList();
-
+            jakarta.persistence.Query nq;
+            if (tenantId != null) {
+                // Filter by tenant so we pick the right user when multiple tenants share an email
+                nq = entityManager.createNativeQuery(
+                        "SELECT USER_NAME FROM USERS WHERE LOWER(EMAIL) = LOWER(:email) " +
+                        "AND CAST(TENANT_ID AS BIGINT) = :tenantId LIMIT 1")
+                        .setParameter("email", email)
+                        .setParameter("tenantId", tenantId);
+            } else {
+                nq = entityManager.createNativeQuery(
+                        "SELECT USER_NAME FROM USERS WHERE LOWER(EMAIL) = LOWER(:email) LIMIT 1")
+                        .setParameter("email", email);
+            }
+            @SuppressWarnings("unchecked")
+            List<Object> results = nq.getResultList();
             if (!results.isEmpty() && results.get(0) != null) {
                 return (String) results.get(0);
             }
         } catch (Exception e) {
             // ignore
         }
-        return loginInput;
+        return email;
     }
 
     public AuthResponse refresh(String refreshToken) {
@@ -184,7 +219,7 @@ public class AuthService {
         var user = userOptional.get();
         // Check for existing token
         var existingToken = passwordResetTokenRepository.findByUser(user);
-        existingToken.ifPresent(passwordResetTokenRepository::delete);
+        existingToken.ifPresent(t -> { passwordResetTokenRepository.delete(t); passwordResetTokenRepository.flush(); });
 
         // Create new token
         String token = java.util.UUID.randomUUID().toString();
@@ -228,5 +263,12 @@ public class AuthService {
             String refreshToken,
             String tokenType,
             String tenantId) {
+    }
+
+    public record TenantInfoDTO(
+            Long id,
+            String name,
+            String slug,
+            String logoUrl) {
     }
 }

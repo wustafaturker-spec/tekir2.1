@@ -1,0 +1,51 @@
+-- ========================================================
+-- V2000: Muhasebe Modülü - Hesap Planı ve Hesap Kodları
+-- ========================================================
+
+-- Hesap Planı tablosu
+CREATE TABLE IF NOT EXISTS ACCOUNT_PLAN (
+    ID              BIGSERIAL PRIMARY KEY,
+    TENANT_ID       VARCHAR(255),
+    CODE            VARCHAR(20)  NOT NULL,
+    NAME            VARCHAR(255) NOT NULL,
+    DESCRIPTION     TEXT,
+    PLAN_TYPE       VARCHAR(30)  NOT NULL DEFAULT 'CUSTOM',
+    IS_DEFAULT      BOOLEAN      DEFAULT FALSE,
+    IS_ACTIVE       BOOLEAN      DEFAULT TRUE,
+    EFFECTIVE_DATE  DATE,
+    ACCOUNT_COUNT   INTEGER      DEFAULT 0,
+    CREATE_DATE     TIMESTAMP,
+    UPDATE_DATE     TIMESTAMP,
+    CREATE_USER     VARCHAR(10),
+    UPDATE_USER     VARCHAR(10),
+    CONSTRAINT uq_account_plan UNIQUE (TENANT_ID, CODE)
+);
+
+-- Hesap Kodu tablosu (hiyerarşik)
+CREATE TABLE IF NOT EXISTS CHART_ACCOUNT (
+    ID              BIGSERIAL PRIMARY KEY,
+    TENANT_ID       VARCHAR(255),
+    PLAN_ID         BIGINT       NOT NULL REFERENCES ACCOUNT_PLAN(ID) ON DELETE CASCADE,
+    CODE            VARCHAR(20)  NOT NULL,
+    NAME            VARCHAR(255) NOT NULL,
+    DESCRIPTION     TEXT,
+    ACCOUNT_TYPE    VARCHAR(20)  NOT NULL,
+    NORMAL_BALANCE  VARCHAR(10)  NOT NULL,
+    LEVEL           INTEGER      NOT NULL,
+    PARENT_ID       BIGINT       REFERENCES CHART_ACCOUNT(ID),
+    IS_DETAIL       BOOLEAN      DEFAULT FALSE,
+    IS_ACTIVE       BOOLEAN      DEFAULT TRUE,
+    CURRENCY        VARCHAR(3),
+    TAX_CODE        VARCHAR(10),
+    IS_BLOCKED      BOOLEAN      DEFAULT FALSE,
+    CREATE_DATE     TIMESTAMP,
+    UPDATE_DATE     TIMESTAMP,
+    CREATE_USER     VARCHAR(10),
+    UPDATE_USER     VARCHAR(10),
+    CONSTRAINT uq_chart_account UNIQUE (TENANT_ID, PLAN_ID, CODE)
+);
+
+CREATE INDEX IF NOT EXISTS idx_chart_account_plan   ON CHART_ACCOUNT(PLAN_ID);
+CREATE INDEX IF NOT EXISTS idx_chart_account_parent ON CHART_ACCOUNT(PARENT_ID);
+CREATE INDEX IF NOT EXISTS idx_chart_account_code   ON CHART_ACCOUNT(CODE);
+CREATE INDEX IF NOT EXISTS idx_account_plan_tenant  ON ACCOUNT_PLAN(TENANT_ID);

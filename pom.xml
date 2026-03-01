@@ -27,6 +27,7 @@
         <module>tekir-service</module>
         <module>tekir-security</module>
         <module>tekir-report</module>
+        <module>tekir-accounting</module>
         <module>tekir-api</module>
         <module>tekir-migration</module>
     </modules>
@@ -85,6 +86,11 @@
             <dependency>
                 <groupId>com.ut.tekir</groupId>
                 <artifactId>tekir-billing</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ut.tekir</groupId>
+                <artifactId>tekir-accounting</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

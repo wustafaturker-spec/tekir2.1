@@ -48,6 +48,10 @@
             <groupId>com.ut.tekir</groupId>
             <artifactId>tekir-billing</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ut.tekir</groupId>
+            <artifactId>tekir-accounting</artifactId>
+        </dependency>
 
         <!-- Spring Boot Web -->
         <dependency>

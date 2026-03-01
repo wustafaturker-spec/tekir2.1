@@ -12,7 +12,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaRepositories(basePackages = {
     "com.ut.tekir.repository",
     "com.ut.tekir.tenant.repository",
-    "com.ut.tekir.billing.repository"
+    "com.ut.tekir.billing.repository",
+    "com.ut.tekir.accounting.repository"
 })
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableScheduling

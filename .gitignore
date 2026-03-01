@@ -1,0 +1,4 @@
+target/
+tekir-web/.next/
+tekir-web/node_modules/
+*.class
