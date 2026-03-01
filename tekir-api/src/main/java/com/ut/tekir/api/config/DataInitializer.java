@@ -2,6 +2,8 @@ package com.ut.tekir.api.config;
 
 import com.ut.tekir.common.entity.*;
 import com.ut.tekir.repository.*;
+import com.ut.tekir.tenant.context.TenantContext;
+import com.ut.tekir.tenant.repository.TenantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -25,6 +27,7 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRoleRepository userRoleRepository;
     private final PermissionRepository permissionRepository;
     private final RolePermissionRepository rolePermissionRepository;
+    private final TenantRepository tenantRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // All permission codes used across controllers
@@ -112,16 +115,33 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        Role adminRole = createRoleIfNotFound("ADMIN");
-        createRoleIfNotFound("USER");
+        // Seed ADMIN role + permissions for every active tenant
+        List<Long> tenantIds = tenantRepository.findByActiveTrue()
+                .stream().map(t -> t.getId()).collect(Collectors.toList());
 
-        seedPermissionsForAdminRole(adminRole);
+        if (tenantIds.isEmpty()) {
+            tenantIds = List.of(1L); // fallback
+        }
 
-        createUserIfNotFound("admin@tekir.com", "admin", "admin@tekir.com", "Administrator");
-        createUserIfNotFound("user@tekir.com", "user", "user@tekir.com", "Standard User");
+        for (Long tenantId : tenantIds) {
+            TenantContext.setTenantId(tenantId);
+            try {
+                Role adminRole = createRoleIfNotFound("ADMIN");
+                createRoleIfNotFound("USER");
+                seedPermissionsForAdminRole(adminRole);
 
-        // Ensure existing admin user has ADMIN role (fixes previous sessions)
-        ensureAdminRoleAssigned("admin@tekir.com", adminRole);
+                // Default admin user only for tenant 1
+                if (tenantId == 1L) {
+                    createUserIfNotFound("admin@tekir.com", "admin", "admin@tekir.com", "Administrator");
+                    createUserIfNotFound("user@tekir.com", "user", "user@tekir.com", "Standard User");
+                }
+
+                ensureAdminRoleAssigned("admin@tekir.com", adminRole);
+                log.info("DataInitializer: seeded tenant {}", tenantId);
+            } finally {
+                TenantContext.clear();
+            }
+        }
     }
 
     private Role createRoleIfNotFound(String roleName) {
